@@ -166,3 +166,62 @@ class ProductManagerGUI:
             messagebox.showinfo("Search Result", f"ID: {product.id}\nName: {product.name}\nCategory: {product.category}\nPrice: Rp {product.price:,.2f}\nStock: {product.stock}")
         else:
             messagebox.showerror("Search Error", "Product not found")
+
+    def create_product_window(self, title, product=None):
+        product_window = tk.Toplevel(self.root)
+        product_window.title(title)
+        product_window.geometry("300x380")
+
+        tk.Label(product_window, text="ID:").pack(pady=5)
+        id_entry = tk.Entry(product_window)
+        id_entry.pack(pady=5)
+        if product:
+            id_entry.insert(0, product.id)
+            id_entry.config(state='disabled')
+
+        tk.Label(product_window, text="Name:").pack(pady=5)
+        name_entry = tk.Entry(product_window)
+        name_entry.pack(pady=5)
+        if product:
+            name_entry.insert(0, product.name)
+
+        tk.Label(product_window, text="Category:").pack(pady=5)
+        category_entry = tk.Entry(product_window)
+        category_entry.pack(pady=5)
+        if product:
+            category_entry.insert(0, product.category)
+
+        tk.Label(product_window, text="Price:").pack(pady=5)
+        price_entry = tk.Entry(product_window)
+        price_entry.pack(pady=5)
+        if product:
+            price_entry.insert(0, product.price)
+
+        tk.Label(product_window, text="Stock:").pack(pady=5)
+        stock_entry = tk.Entry(product_window)
+        stock_entry.pack(pady=5)
+        if product:
+            stock_entry.insert(0, product.stock)
+
+        action_button = tk.Button(product_window, text=title, command=lambda: self.save_product(product_window, id_entry.get(), name_entry.get(), category_entry.get(), price_entry.get(), stock_entry.get()))
+        action_button.pack(pady=20)
+
+    def save_product(self, window, id, name, category, price, stock):
+        try:
+            price = float(price)
+            stock = int(stock)
+        except ValueError:
+            messagebox.showerror("Input Error", "Price must be a float and Stock must be an integer")
+            return
+        if window.title() == "Add Product":
+            self.product_manager.create_product(id, name, category, price, stock)
+        elif window.title() == "Edit Product":
+            self.product_manager.update_product(id, name, category, price, stock)
+        window.destroy()
+        self.view_products()
+
+if __name__ == "__main__":
+    product_manager = ProductManager()
+    root = tk.Tk()
+    gui = ProductManagerGUI(root, product_manager)
+    root.mainloop()
